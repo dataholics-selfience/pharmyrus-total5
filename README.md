@@ -1,82 +1,117 @@
-# Pharmyrus API v6.0
+# Pharmyrus API v7.0 - "Cortellis Killer"
 
-Brazilian Pharmaceutical Patent Search API
+Deep Pharmaceutical Patent Search with Worldwide Coverage
 
-## Quick Deploy to Railway
+## 🚀 O que há de novo na v7.0
 
-### Option 1: Deploy via GitHub (Recommended)
+- **Deep Navigation**: Navega diretamente em cada WO usando `google_patents_details`
+- **Worldwide Coverage**: Extrai patentes de TODOS os países, não apenas BR
+- **Múltiplas Fontes**: worldwide_applications, family_members, also_published_as, citations
+- **Detalhes Completos**: título, abstract, claims, inventors, assignee, datas, status
+- **EPO OPS Integration**: Busca adicional via API do European Patent Office
+- **INPI Direct**: Busca direta no INPI com variações em português
 
-1. Create a new GitHub repository
-2. Upload all files from this folder to the repository root
-3. Go to [Railway](https://railway.app)
-4. Click "New Project"
-5. Select "Deploy from GitHub repo"
-6. Select your repository
-7. Railway will auto-detect and deploy
+## 📊 Comparação com Cortellis (Darolutamide)
 
-### Option 2: Deploy via Railway CLI
+| Métrica | Cortellis | Pharmyrus v7.0 |
+|---------|-----------|----------------|
+| WOs esperados | 7 | 71+ |
+| BRs esperados | 8 | 8+ |
+| Países | BR apenas | TODOS |
+| Detalhes | Básico | Completo |
+| Claims | Não | Sim |
+
+## 🌐 URLs da API
+
+### Busca via Browser (GET)
+
+```
+# Busca básica
+https://[sua-url]/api/v1/search/darolutamide
+
+# Com nome comercial
+https://[sua-url]/api/v1/search/darolutamide?brand=Nubeqa
+
+# Outras moléculas
+https://[sua-url]/api/v1/search/olaparib
+https://[sua-url]/api/v1/search/venetoclax
+https://[sua-url]/api/v1/search/enzalutamide
+https://[sua-url]/api/v1/search/abiraterone
+```
+
+### Busca via API (POST)
 
 ```bash
-# Install Railway CLI
-npm install -g @railway/cli
-
-# Login
-railway login
-
-# Initialize project
-railway init
-
-# Deploy
-railway up
-```
-
-## URL Format
-
-After deployment, your API will be available at:
-
-```
-https://<project-name>-production.up.railway.app
-```
-
-Or Railway may generate a random URL like:
-```
-https://<random-string>.railway.app
-```
-
-You can customize the domain in Railway Dashboard → Settings → Domains
-
-## API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/` | GET | API information |
-| `/health` | GET | Health check |
-| `/search` | POST | Main patent search |
-
-## Example Request
-
-```bash
-curl -X POST https://your-app.railway.app/search \
+curl -X POST https://[sua-url]/search \
   -H "Content-Type: application/json" \
   -d '{"nome_molecula": "darolutamide", "nome_comercial": "Nubeqa"}'
 ```
 
-## Files Structure
+### Outros Endpoints
+
+| Endpoint | Método | Descrição |
+|----------|--------|-----------|
+| `/` | GET | Info da API |
+| `/health` | GET | Health check |
+| `/search` | POST | Busca completa |
+| `/api/v1/search/{molecule}` | GET | Busca via URL |
+
+## 📦 Estrutura de Resposta
+
+```json
+{
+  "api_version": "7.0 Cortellis Killer",
+  "molecule_info": {...},
+  "wo_discovery": {
+    "total_found": 71,
+    "wo_numbers": [...]
+  },
+  "worldwide_patents": {
+    "total": 500+,
+    "by_country": {"BR": 8, "US": 45, "EP": 30, ...},
+    "patents": [...]
+  },
+  "br_patents": {
+    "total": 8,
+    "patents": [
+      {
+        "number": "BR112012008823A2",
+        "title": "...",
+        "abstract": "...",
+        "inventors": [...],
+        "assignee": "Orion Corporation",
+        "claims": [...],
+        "filing_date": "...",
+        "status": "..."
+      }
+    ]
+  },
+  "comparison": {
+    "status": "SUPERIOR"
+  }
+}
+```
+
+## 🛠 Deploy no Railway
+
+1. Crie repo no GitHub
+2. Upload arquivos NA RAIZ
+3. Railway → New Project → Deploy from GitHub
+4. Aguarde build (~2 min)
+
+## ⏱ Performance
+
+- Tempo médio: 10-15 minutos por molécula
+- 71 WOs processados
+- 3 fontes de dados (SerpAPI, INPI, EPO)
+- Rate limiting automático
+
+## 📁 Arquivos
 
 ```
-pharmyrus-railway/
-├── main.py           # FastAPI application
-├── requirements.txt  # Python dependencies
-├── nixpacks.toml     # Nixpacks build config
-├── railway.toml      # Railway specific config
-├── Procfile          # Start command (backup)
-├── runtime.txt       # Python version
-└── README.md         # This file
+├── main.py           # FastAPI (35KB)
+├── requirements.txt  # Dependencies
+├── Procfile          # Start command
+├── runtime.txt       # Python 3.11
+└── .gitignore
 ```
-
-## Environment
-
-- Python 3.11
-- FastAPI 0.104.1
-- uvicorn 0.24.0
-- httpx 0.25.2
